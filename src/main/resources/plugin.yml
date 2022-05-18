@@ -1,0 +1,19 @@
+name: PvP
+version: '@project.version@'
+main: uk.co.notnull.pvp.PvP
+api-version: 1.18
+softdepend:
+  - PlaceholderAPI
+permissions:
+  pvp.toggle:
+    description: "Allows toggling of your own PvP state"
+    default: true
+  pvp.toggle.other:
+    description: "Allows toggling of other players PvP states"
+    default: op
+  pvp.info:
+    description: "Allows viewing of other players PvP states"
+    default: op
+  pvp.reload:
+    description: "Allows reloading the plugin"
+    default: op

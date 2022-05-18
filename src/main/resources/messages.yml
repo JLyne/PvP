@@ -1,0 +1,27 @@
+self-pvp-enabled: "<yellow><bold>PvP > <reset><gold>PvP has been enabled.<br>"
+self-pvp-still-enabled: "<yellow><bold>PvP > <reset><gold>You still have PvP enabled."
+self-pvp-disabled: "<green><bold>PvP > <reset><light_purple>PvP has been disabled."
+
+target-pvp-enabled: "<yellow><bold>PvP > <reset><gold>PvP has been enabled for <yellow><player>."
+target-pvp-disabled: "<green><bold>PvP > <reset><light_purple>PvP has been disabled for <green><player>."
+pvp-force-enabled: "<yellow><bold>PvP > <reset><gold>PvP was <yellow>enabled<gold> for you by <player>."
+pvp-force-disabled: "<green><bold>PvP > <reset><light_purple>PvP was <green>disabled<light_purple> for you by <player>."
+
+notify-pvp-enabled: "<yellow><bold>PvP > <reset><yellow><player><gold> has enabled PvP."
+notify-pvp-disabled: "<green><bold>PvP > <reset><green><player><light_purple> has disabled PvP."
+notify-pvp-punish: "<yellow><bold>PvP > <reset><yellow><player><gold> was punished for abandoning a PvP fight."
+
+target-info-enabled: "<light_purple><bold>PvP > <reset><aqua><player> has PvP <yellow>enabled."
+target-info-disabled: "<light_purple><bold>PvP > <reset><aqua><player> has PvP <yellow>disabled."
+safe-to-leave: "<light_purple><bold>PvP > <reset><aqua>It is now <yellow>safe<aqua> to leave the server."
+reloaded: "<green><bold>PvP > <reset><light_purple>Config has been reloaded."
+
+errors:
+  cannot-damage-pvp-disabled: "<red><bold>PvP > <reset><yellow>You have PvP disabled and cannot attack <red><player>."
+  cannot-damage-target-pvp-disabled: "<red><bold>PvP > <reset><red><player><yellow> has PvP disabled and cannot be attacked."
+  cannot-toggle-command-cooldown: "<red><bold>PvP > <reset><yellow>Cannot toggle PvP.<br>You recently enabled PvP and must wait <red><time><yellow> seconds."
+  cannot-toggle-pvp-cooldown: "<red><bold>PvP > <reset><yellow>Cannot toggle PvP.<br>You were recently in combat and must wait <red><time><yellow> seconds."
+  cannot-ignite-pvp-disabled: "<red><bold>PvP > <reset><yellow>You cannot start a fire this close to <red><player><yellow> as you have PvP disabled."
+  cannot-ignite-nearby-pvp-disabled: "<red><bold>PvP > <reset><yellow>You cannot start a fire this close to <red><player><yellow> as they have PvP disabled."
+  cannot-lava-pvp-disabled: "<red><bold>PvP > <reset><yellow>You cannot place lava this close to <red><player><yellow> as you have PvP disabled."
+  cannot-lava-nearby-pvp-disabled: "<red><bold>PvP > <reset><yellow>You cannot place lava this close to <red><player><yellow> as they have PvP disabled."
