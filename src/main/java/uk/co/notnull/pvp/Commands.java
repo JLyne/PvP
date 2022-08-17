@@ -61,13 +61,13 @@ public class Commands {
         //
         // Register Brigadier mappings
         //
-        if (paperCommandManager.queryCapability(CloudBukkitCapabilities.BRIGADIER)) {
+        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.BRIGADIER)) {
             paperCommandManager.registerBrigadier();
         }
         //
         // Register asynchronous completions
         //
-        if (paperCommandManager.queryCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
+        if (paperCommandManager.hasCapability(CloudBukkitCapabilities.ASYNCHRONOUS_COMPLETION)) {
             this.paperCommandManager.registerAsynchronousCompletions();
         }
 
