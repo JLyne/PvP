@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Yes" pattern="file[PvP.main]:java/uk/co/notnull/pvp//*" />
+</component>
