@@ -208,11 +208,11 @@ public class Events implements Listener {
 			if(!plugin.hasPvPEnabled(player)) {
 				player.sendMessage(
 						Messages.getComponent("errors.cannot-ignite-pvp-disabled", Collections.emptyMap(),
-											  Collections.singletonMap("player", nearby.get(0).displayName())));
+											  Collections.singletonMap("player", nearby.getFirst().displayName())));
 			} else {
 				player.sendMessage(
 						Messages.getComponent("errors.cannot-ignite-nearby-pvp-disabled", Collections.emptyMap(),
-											  Collections.singletonMap("player", nearby.get(0).displayName())));
+											  Collections.singletonMap("player", nearby.getFirst().displayName())));
 			}
 		}
 	}
@@ -234,11 +234,11 @@ public class Events implements Listener {
 			if(!plugin.hasPvPEnabled(player)) {
 				player.sendMessage(
 						Messages.getComponent("errors.cannot-lava-pvp-disabled", Collections.emptyMap(),
-											  Collections.singletonMap("player", nearby.get(0).displayName())));
+											  Collections.singletonMap("player", nearby.getFirst().displayName())));
 			} else {
 				player.sendMessage(
 						Messages.getComponent("errors.cannot-lava-nearby-pvp-disabled", Collections.emptyMap(),
-											  Collections.singletonMap("player", nearby.get(0).displayName())));
+											  Collections.singletonMap("player", nearby.getFirst().displayName())));
 			}
 		}
 	}
