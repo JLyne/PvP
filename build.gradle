@@ -21,12 +21,12 @@ repositories {
 
 dependencies {
     compileOnly 'org.jetbrains:annotations:24.0.1'
-    compileOnly "io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT"
-    compileOnly 'me.clip:placeholderapi:2.11.3'
+    compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
+    compileOnly 'me.clip:placeholderapi:2.11.6'
 
-    implementation 'cloud.commandframework:cloud-paper:1.8.3'
-    implementation 'cloud.commandframework:cloud-minecraft-extras:1.8.3'
-    implementation 'cloud.commandframework:cloud-annotations:1.8.3'
+    implementation 'cloud.commandframework:cloud-paper:1.8.4'
+    implementation 'cloud.commandframework:cloud-minecraft-extras:1.8.4'
+    implementation 'cloud.commandframework:cloud-annotations:1.8.4'
 }
 
 group 'uk.co.notnull'

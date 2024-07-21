@@ -35,7 +35,7 @@ public class Commands {
 		this.plugin = plugin;
 		
         final Function<CommandTree<CommandSender>, CommandExecutionCoordinator<CommandSender>> executionCoordinatorFunction =
-                AsynchronousCommandExecutionCoordinator.<CommandSender>newBuilder().build();
+                AsynchronousCommandExecutionCoordinator.<CommandSender>builder().build();
 
         try {
             paperCommandManager = new PaperCommandManager<>(

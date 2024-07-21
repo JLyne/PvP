@@ -15,11 +15,10 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionType;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class Events implements Listener {
 	private final PvP plugin;
@@ -152,9 +151,19 @@ public class Events implements Listener {
 			return;
 		}
 
+		PotionType basePotionType = cloud.getBasePotionType();
+		List<PotionEffect> effects = new ArrayList<>();
+
+		if(cloud.hasCustomEffects()) {
+			effects.addAll(cloud.getCustomEffects());
+		}
+
+		if(basePotionType != null) {
+			effects.addAll(basePotionType.getPotionEffects());
+		}
+
 		//Ignore clouds with only positive effects
-		if(cloud.getCustomEffects().stream().allMatch(effect -> PvP.positiveEffects.contains(effect.getType()))
-				&& PvP.positiveEffects.contains(cloud.getBasePotionData().getType().getEffectType())) {
+		if(effects.stream().allMatch(effect -> PvP.positiveEffects.contains(effect.getType()))) {
 			return;
 		}
 
