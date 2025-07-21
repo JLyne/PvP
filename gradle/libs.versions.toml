@@ -3,10 +3,12 @@ pluginYml = "0.7.1"
 paperApi = "1.21.8-R0.1-SNAPSHOT"
 placeholderApi = "2.11.6"
 shadow = "8.3.8"
+worldguard = "7.0.14"
 
 [libraries]
 paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
 placeholderApi = { group = "me.clip", name = "placeholderapi", version.ref  = "placeholderApi" }
+worldguard =  { group = "com.sk89q.worldguard", name = "worldguard-bukkit", version.ref  = "worldguard" }
 
 [plugins]
 pluginYml = { id = "de.eldoria.plugin-yml.paper", version.ref = "pluginYml" }

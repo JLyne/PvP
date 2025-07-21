@@ -56,6 +56,11 @@ public final class Commands {
 			return 0;
 		}
 
+		if (plugin.isInPvPArena(player)) {
+			player.sendMessage(Messages.getComponent("errors.cannot-toggle-in-arena"));
+			return 0;
+		}
+
 		if(plugin.hasPvPEnabled(player)) {
 			long toggleCooldown = plugin.getRemainingToggleCooldown(player);
 			long pvpCooldown = plugin.getRemainingPvPCooldown(player);
@@ -122,11 +127,17 @@ public final class Commands {
 			return 0;
 		}
 
-		if(plugin.hasPvPEnabled(player)) {
-			sender.sendMessage(Messages.getComponent("self-info-enabled"));
+		String message;
+
+		if (plugin.isInPvPArena(player)) {
+			message = "self-info-arena";
+		} else if (plugin.hasPvPEnabled(player)) {
+			message = "self-info-enabled";
 		} else {
-			sender.sendMessage(Messages.getComponent("self-info-disabled"));
+			message = "self-info-disabled";
 		}
+
+		sender.sendMessage(Messages.getComponent(message));
 
 		return Command.SINGLE_SUCCESS;
 	}
@@ -137,13 +148,18 @@ public final class Commands {
 		List<Player> players = resolver.resolve(ctx.getSource());
 
 		for (Player target : players) {
-			if (plugin.hasPvPEnabled(target)) {
-				sender.sendMessage(Messages.getComponent("target-info-enabled", Collections.emptyMap(),
-														 Collections.singletonMap("player", target.displayName())));
+			String message;
+
+			if (plugin.isInPvPArena(target)) {
+				message = "target-info-arena";
+			} else if (plugin.hasPvPEnabled(target)) {
+				message = "target-info-enabled";
 			} else {
-				sender.sendMessage(Messages.getComponent("target-info-disabled", Collections.emptyMap(),
-														 Collections.singletonMap("player", target.displayName())));
+				message = "target-info-disabled";
 			}
+
+			sender.sendMessage(Messages.getComponent(message, Collections.emptyMap(),
+													 Collections.singletonMap("player", target.displayName())));
 		}
 
 		return Command.SINGLE_SUCCESS;

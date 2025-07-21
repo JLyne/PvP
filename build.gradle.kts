@@ -31,6 +31,7 @@ repositories {
 dependencies {
 	compileOnly(libs.paperApi)
 	compileOnly(libs.placeholderApi)
+    compileOnly(libs.worldguard)
 }
 
 paper {
@@ -66,6 +67,10 @@ paper {
         register("PlaceholderAPI") {
             required = false
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+        register("WorldGuard") {
+            required = false
+            load = PaperPluginDescription.RelativeLoadOrder.AFTER
         }
     }
 }

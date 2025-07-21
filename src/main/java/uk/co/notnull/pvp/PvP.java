@@ -17,7 +17,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Tameable;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,19 +34,23 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public final class PvP extends JavaPlugin implements Listener {
 
+	private ArenaEvents arenaEvents = null;
 	private Configuration config;
     private final List<UUID> pvpEnabled = new ArrayList<>();
+    private final Set<UUID> inPvPArena = new HashSet<>();
 	private final Map<Player, Instant> lastDamage = new HashMap<>();
 	private final Map<Player, Instant> lastMessage = new HashMap<>();
 	private final Map<UUID, Instant> lastToggle = new HashMap<>();
@@ -73,6 +80,7 @@ public final class PvP extends JavaPlugin implements Listener {
 	@Override
 	public void onEnable() {
 		// Plugin startup logic
+		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(new Events(this), this);
 		initConfig();
 		loadPvPStates();
@@ -111,6 +119,24 @@ public final class PvP extends JavaPlugin implements Listener {
 		}
 	}
 
+	@EventHandler
+	public void onPluginEnable(PluginEnableEvent event) {
+		if (event.getPlugin().getName().equals("WorldGuard")) {
+			getLogger().info("Initialising WorldGuard handler");
+			arenaEvents = new ArenaEvents(this);
+		}
+	}
+
+	@EventHandler
+	public void onPluginDisable(PluginDisableEvent event) {
+		if (event.getPlugin().getName().equals("WorldGuard")) {
+			if (arenaEvents != null) {
+				getLogger().info("Disabling WorldGuard handler");
+				arenaEvents = null;
+			}
+		}
+	}
+
 	public void initConfig() {
 		config = getConfig();
 
@@ -120,6 +146,10 @@ public final class PvP extends JavaPlugin implements Listener {
 		defaults.setComments("pvp-timeout", List.of(
 				"The number of seconds that must pass without a player giving or receiving PvP damage,",
 				"in order that player to be able to leave the server without punishment."));
+
+		defaults.addDefault("pvp-arenas", Collections.emptyList());
+		defaults.setComments("pvp-arenas", List.of(
+				"Worldguard regions considered PvP arenas"));
 
 		config.setDefaults(defaults);
 		saveDefaultConfig();
@@ -134,6 +164,10 @@ public final class PvP extends JavaPlugin implements Listener {
 
 		Configuration messages = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "messages.yml"));
 		Messages.set(messages);
+
+		if (arenaEvents != null) {
+			arenaEvents.reload();
+		}
 	}
 
 	/**
@@ -160,6 +194,26 @@ public final class PvP extends JavaPlugin implements Listener {
 		}
 
 		if(!attacker.isOnline()) {
+			return false;
+		}
+
+		if (inPvPArena.contains(attacker.getUniqueId()) && inPvPArena.contains(victim.getUniqueId())) {
+			return true;
+		}
+
+		if (inPvPArena.contains(attacker.getUniqueId()) && !inPvPArena.contains(victim.getUniqueId())) {
+			if(sendMessages && attacker instanceof Player onlinePlayer) {
+				sendDenyMessage("errors.cannot-damage-target-not-in-arena", onlinePlayer, victim);
+			}
+
+			return false;
+		}
+
+		if (!inPvPArena.contains(attacker.getUniqueId()) && inPvPArena.contains(victim.getUniqueId())) {
+			if(sendMessages && attacker instanceof Player onlinePlayer ) {
+				sendDenyMessage("errors.cannot-damage-target-in-arena", onlinePlayer, victim);
+			}
+
 			return false;
 		}
 
@@ -212,6 +266,8 @@ public final class PvP extends JavaPlugin implements Listener {
 	 * @return A list of any pvp protected players in range
 	 */
 	List<Player> getNearbyProtectedPlayers(OfflinePlayer player, Location location, int range) {
+		double rangeSquared = Math.pow(range, 2);
+
 		return location.getWorld().getPlayers().stream()
 				.filter(otherPlayer -> {
 					if(otherPlayer.equals(player)) {
@@ -222,7 +278,7 @@ public final class PvP extends JavaPlugin implements Listener {
 						return false;
 					}
 
-					if (otherPlayer.getLocation().distanceSquared(location) >= Math.pow(range, 2)) {
+					if (otherPlayer.getLocation().distanceSquared(location) >= rangeSquared) {
 						return false;
 					}
 
@@ -257,6 +313,24 @@ public final class PvP extends JavaPlugin implements Listener {
 	 */
 	public boolean hasPvPEnabled(Player player) {
 		return pvpEnabled.contains(player.getUniqueId());
+	}
+
+	/**
+	 * Returns whether the given player is in a PvP arena
+	 * @param player The player to check
+	 * @return Whether the player is in a PvP arena
+	 */
+	public boolean isInPvPArena(Player player) {
+		return inPvPArena.contains(player.getUniqueId());
+	}
+
+	/**
+	 * Returns whether the given location is in a PvP arena
+	 * @param location The location to check
+	 * @return Whether the location is in a PvP arena
+	 */
+	public boolean isInPvPArena(Location location) {
+		return arenaEvents != null && arenaEvents.isInPvPArena(location);
 	}
 
 	/**
@@ -333,10 +407,34 @@ public final class PvP extends JavaPlugin implements Listener {
 		}
 	}
 
+	/**
+	 * Sets whether the given player is in a PvPArena
+	 * @param player The player
+	 * @param state Whether the player is in a PvP arena
+	 */
+	void setInPvPArena(@NotNull Player player, boolean state) {
+		getLogger().info(player.getName() + (state ? " entered " : " left ") + "a PvP arena");
+
+		if (state) {
+			inPvPArena.add(player.getUniqueId());
+		} else {
+			if (inPvPArena.remove(player.getUniqueId())) {
+				clearPlayer(player);
+
+				// Warn PvP is still enabled
+				if (pvpEnabled.contains(player.getUniqueId())) {
+					player.sendMessage(Messages.getComponent("self-pvp-still-enabled"));
+				}
+			}
+		}
+	}
+
 	private void broadcastPvPStatus(Player player) {
 		Component message = Messages.getComponent(hasPvPEnabled(player) ? "notify-pvp-enabled" : "notify-pvp-disabled",
 												  Collections.emptyMap(),
 												  Collections.singletonMap("player", player.displayName()));
+
+		getLogger().info(player.getName() + (hasPvPEnabled(player) ? " enabled " : " disabled ") + "PvP");
 
 		for (Player onlinePlayer : getServer().getOnlinePlayers()) {
 			if(!onlinePlayer.equals(player) && onlinePlayer.canSee(player)) {

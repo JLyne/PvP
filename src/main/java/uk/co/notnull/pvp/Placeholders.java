@@ -127,13 +127,24 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
         }
 
 		switch (identifier) {
+			case "active" -> {
+				return String.valueOf(plugin.hasPvPEnabled(player) || plugin.isInPvPArena(player));
+			}
 			case "enabled" -> {
 				return String.valueOf(plugin.hasPvPEnabled(player));
 			}
+			case "arena" -> {
+				return String.valueOf(plugin.isInPvPArena(player));
+			}
 			case "safe" -> {
-				return String.valueOf(!plugin.hasPvPEnabled(player) || plugin.getRemainingPvPCooldown(player) == 0);
+				return String.valueOf((!plugin.hasPvPEnabled(player) && !plugin.isInPvPArena(player))
+											  || plugin.getRemainingPvPCooldown(player) == 0);
 			}
 			case "status" -> {
+				if (plugin.isInPvPArena(player)) {
+					return plugin.getRemainingPvPCooldown(player) > 0 ? "arena_unsafe" : "arena_safe";
+				}
+
 				if (plugin.hasPvPEnabled(player)) {
 					return plugin.getRemainingPvPCooldown(player) > 0 ? "enabled_unsafe" : "enabled_safe";
 				}
@@ -157,7 +168,13 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
         }
 
         if(identifier.equals("status")) {
-            if(!plugin.hasPvPEnabled(player1) && !plugin.hasPvPEnabled(player2)) {
+			if (plugin.isInPvPArena(player1) && plugin.isInPvPArena(player2)) {
+				return "both_arena";
+			} else if (plugin.isInPvPArena(player1)) {
+				return "own_arena";
+			} else if (plugin.isInPvPArena(player2)) {
+				return "other_arena";
+			} else if(!plugin.hasPvPEnabled(player1) && !plugin.hasPvPEnabled(player2)) {
                 return "both_disabled";
             } else if(!plugin.hasPvPEnabled(player1)) {
                 return "own_disabled";

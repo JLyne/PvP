@@ -1,1 +1,4 @@
 pvp-timeout: 30
+# Worldguard regions considered PvP arenas
+pvp-arenas:
+  # - template_pvp_arena

@@ -222,6 +222,10 @@ public class Events implements Listener {
 			return;
 		}
 
+		if (plugin.isInPvPArena(event.getBlock().getLocation())) {
+			return;
+		}
+
 		//Prevent placing fire near other players if PvP isn't allowed
 		List<Player> nearby = plugin.getNearbyProtectedPlayers(player, block.getLocation());
 
@@ -243,6 +247,10 @@ public class Events implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onBucketEmpty(PlayerBucketEmptyEvent event) {
 		if (event.getBucket() != Material.LAVA_BUCKET) {
+			return;
+		}
+
+		if (plugin.isInPvPArena(event.getBlock().getLocation())) {
 			return;
 		}
 
