@@ -32,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
  * This class will be registered through the register-method in the
  * plugins onEnable-method.
  */
-@SuppressWarnings("UnstableApiUsage")
 public class Placeholders extends PlaceholderExpansion implements Relational {
     private final PvP plugin;
 

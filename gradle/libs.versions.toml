@@ -1,6 +1,6 @@
 [versions]
 pluginYml = "0.7.1"
-paperApi = "1.20.6-R0.1-SNAPSHOT"
+paperApi = "1.21.8-R0.1-SNAPSHOT"
 placeholderApi = "2.11.6"
 cloud = "1.8.4"
 shadow = "8.3.8"
