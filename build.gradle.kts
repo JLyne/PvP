@@ -30,9 +30,6 @@ repositories {
 dependencies {
 	compileOnly(libs.paperApi)
 	compileOnly(libs.placeholderApi)
-    implementation(libs.cloudPaper)
-    implementation(libs.cloudMinecraftExtras)
-    implementation(libs.cloudAnnotations)
 }
 
 bukkit {
@@ -52,6 +49,10 @@ bukkit {
             default = BukkitPluginDescription.Permission.Default.OP
         }
         register("pvp.info") {
+            description = "Allows viewing your own PvP state"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+        }
+        register("pvp.info.other") {
             description = "Allows viewing of other players PvP states"
             default = BukkitPluginDescription.Permission.Default.OP
         }

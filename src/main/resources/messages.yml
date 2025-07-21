@@ -1,6 +1,8 @@
 self-pvp-enabled: "<yellow><bold>PvP > <reset><gold>PvP has been enabled.<br>"
 self-pvp-still-enabled: "<yellow><bold>PvP > <reset><gold>You still have PvP enabled."
 self-pvp-disabled: "<green><bold>PvP > <reset><light_purple>PvP has been disabled."
+self-info-enabled: "<light_purple><bold>PvP > <reset><aqua>You have PvP <yellow>enabled."
+self-info-disabled: "<light_purple><bold>PvP > <reset><aqua>You have PvP <yellow>disabled."
 
 target-pvp-enabled: "<yellow><bold>PvP > <reset><gold>PvP has been enabled for <yellow><player>."
 target-pvp-disabled: "<green><bold>PvP > <reset><light_purple>PvP has been disabled for <green><player>."
@@ -17,6 +19,7 @@ safe-to-leave: "<light_purple><bold>PvP > <reset><aqua>It is now <yellow>safe<aq
 reloaded: "<green><bold>PvP > <reset><light_purple>Config has been reloaded."
 
 errors:
+  not-a-player: "<red><bold>PvP > <reset><yellow>You must be in-game to use this command."
   cannot-damage-pvp-disabled: "<red><bold>PvP > <reset><yellow>You have PvP disabled and cannot attack <red><player>."
   cannot-damage-target-pvp-disabled: "<red><bold>PvP > <reset><red><player><yellow> has PvP disabled and cannot be attacked."
   cannot-toggle-command-cooldown: "<red><bold>PvP > <reset><yellow>Cannot toggle PvP.<br>You recently enabled PvP and must wait <red><time><yellow> seconds."

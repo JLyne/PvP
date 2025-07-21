@@ -1,5 +1,7 @@
 package uk.co.notnull.pvp;
 
+import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -17,6 +19,7 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
@@ -74,7 +77,9 @@ public final class PvP extends JavaPlugin implements Listener {
 		initConfig();
 		loadPvPStates();
 
-		new Commands(this);
+		LifecycleEventManager<@NotNull Plugin> manager = getLifecycleManager();
+        manager.registerEventHandler(LifecycleEvents.COMMANDS,
+									 event -> new Commands(this, event.registrar()));
 
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
 			Iterator<Player> iterator = lastDamage.keySet().iterator();
