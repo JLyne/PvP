@@ -16,7 +16,7 @@ import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.Wolf;
+import org.bukkit.entity.Tameable;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -387,8 +387,8 @@ public final class PvP extends JavaPlugin implements Listener {
 			}
 		}
 
-		if(entity instanceof Wolf wolf) {
-			if(wolf.getOwner() instanceof Player player) {
+		if(entity instanceof Tameable tameable) {
+			if(tameable.getOwner() instanceof Player player) {
 				return Optional.of(player);
 			}
 		}
