@@ -1,4 +1,5 @@
 import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     java
@@ -32,12 +33,11 @@ dependencies {
 	compileOnly(libs.placeholderApi)
 }
 
-bukkit {
+paper {
     main = "uk.co.notnull.pvp.PvP"
     apiVersion = libs.versions.paperApi.get().replace(Regex("\\-R\\d.\\d-SNAPSHOT"), "")
     authors = listOf("Jim (AnEnragedPigeon)")
     description = "Toggleable PvP protections"
-    softDepend = listOf("PlaceholderAPI")
 
     permissions {
         register("pvp.toggle") {
@@ -59,6 +59,13 @@ bukkit {
         register("pvp.reload") {
             description = "Allows reloading the plugin"
             default = BukkitPluginDescription.Permission.Default.OP
+        }
+    }
+
+    serverDependencies {
+        register("PlaceholderAPI") {
+            required = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 }

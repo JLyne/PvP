@@ -9,5 +9,5 @@ paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "pape
 placeholderApi = { group = "me.clip", name = "placeholderapi", version.ref  = "placeholderApi" }
 
 [plugins]
-pluginYml = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "pluginYml" }
+pluginYml = { id = "de.eldoria.plugin-yml.paper", version.ref = "pluginYml" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
