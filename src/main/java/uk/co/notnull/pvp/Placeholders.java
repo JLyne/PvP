@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * This class will be registered through the register-method in the
  * plugins onEnable-method.
  */
+@SuppressWarnings("UnstableApiUsage")
 public class Placeholders extends PlaceholderExpansion implements Relational {
     private final PvP plugin;
 
@@ -78,7 +79,7 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
      */
     @Override
     public @NotNull String getAuthor() {
-        return plugin.getDescription().getAuthors().toString();
+        return plugin.getPluginMeta().getAuthors().toString();
     }
 
     /**
@@ -98,14 +99,13 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
     /**
      * This is the version of the expansion.
      * <br>You don't have to use numbers, since it is set as a String.
-     *
      * For convenience do we return the version from the plugin.yml
      *
      * @return The version as a String.
      */
     @Override
     public @NotNull String getVersion() {
-        return plugin.getDescription().getVersion();
+        return plugin.getPluginMeta().getVersion();
     }
 
     /**
@@ -127,23 +127,23 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
             return "";
         }
 
-        if(identifier.equals("enabled")) {
-            return String.valueOf(plugin.hasPvPEnabled(player));
-        }
+		switch (identifier) {
+			case "enabled" -> {
+				return String.valueOf(plugin.hasPvPEnabled(player));
+			}
+			case "safe" -> {
+				return String.valueOf(!plugin.hasPvPEnabled(player) || plugin.getRemainingPvPCooldown(player) == 0);
+			}
+			case "status" -> {
+				if (plugin.hasPvPEnabled(player)) {
+					return plugin.getRemainingPvPCooldown(player) > 0 ? "enabled_unsafe" : "enabled_safe";
+				}
 
-        if(identifier.equals("safe")) {
-            return String.valueOf(!plugin.hasPvPEnabled(player) || plugin.getRemainingPvPCooldown(player) == 0);
-        }
+				return "disabled";
+			}
+		}
 
-        if(identifier.equals("status")) {
-            if(plugin.hasPvPEnabled(player)) {
-                return plugin.getRemainingPvPCooldown(player) > 0 ? "enabled_unsafe" : "enabled_safe";
-            }
-
-            return "disabled";
-        }
-
-        return null;
+		return null;
     }
 
     @Override

@@ -8,7 +8,13 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LightningStrike;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.Wolf;
 import org.bukkit.event.Listener;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +25,16 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public final class PvP extends JavaPlugin implements Listener {
@@ -400,8 +415,7 @@ public final class PvP extends JavaPlugin implements Listener {
 			data.save(dataFile);
 			return true;
 		} catch (IOException e) {
-			getLogger().severe( "Failed to save player PvP statuses");
-			e.printStackTrace();
+			getLogger().log(Level.SEVERE, "Failed to save player PvP statuses", e);
 			return false;
 		}
 	}

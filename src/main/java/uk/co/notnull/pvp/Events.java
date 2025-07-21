@@ -3,14 +3,24 @@ package uk.co.notnull.pvp;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AreaEffectCloud;
+import org.bukkit.entity.EnderCrystal;
+import org.bukkit.entity.LightningStrike;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -18,7 +28,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 public class Events implements Listener {
 	private final PvP plugin;
@@ -68,18 +82,18 @@ public class Events implements Listener {
 		}
 
 		if(event.getEntity() instanceof EnderCrystal crystal) {
-			plugin.getResponsiblePlayer(event.getDamager()).ifPresent(attacker -> {
-				crystal.setMetadata("responsible", new FixedMetadataValue(plugin, attacker.getUniqueId()));
-			});
+			plugin.getResponsiblePlayer(event.getDamager()).ifPresent(
+					attacker -> crystal.setMetadata("responsible",
+													new FixedMetadataValue(plugin, attacker.getUniqueId())));
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityCombust(EntityCombustByEntityEvent event) {
 		if(event.getEntity() instanceof ExplosiveMinecart minecart) {
-			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(attacker -> {
-				minecart.setMetadata("responsible", new FixedMetadataValue(plugin, attacker.getUniqueId()));
-			});
+			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(
+					attacker -> minecart.setMetadata("responsible",
+													 new FixedMetadataValue(plugin, attacker.getUniqueId())));
 		}
 	}
 

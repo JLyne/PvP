@@ -25,7 +25,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public class Commands {
+public final class Commands {
 	private final PvP plugin;
 	private PaperCommandManager<CommandSender> paperCommandManager;
     private AnnotationParser<CommandSender> annotationParser;
