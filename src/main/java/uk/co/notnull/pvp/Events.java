@@ -208,7 +208,7 @@ public class Events implements Listener {
 		}
 
 		//Prevent pets targeting players if PvP isn't allowed
-		if(!plugin.hasPvPEnabled(target) || !plugin.hasPvPEnabled(owner)) {
+		if(!plugin.checkPvPAttempt(owner, target, false)) {
 			event.setCancelled(true);
 		}
 	}

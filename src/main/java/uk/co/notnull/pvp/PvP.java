@@ -144,6 +144,17 @@ public final class PvP extends JavaPlugin implements Listener {
 	 * @return Whether the PvP attempt is allowed
 	 */
 	public boolean checkPvPAttempt(OfflinePlayer attacker, Player victim) {
+		return checkPvPAttempt(attacker, victim, true);
+	}
+
+	/**
+	 * Determines whether a PvP attempt is allowed based on the status of the involved players
+	 * @param attacker - The attacker
+	 * @param victim - The victim
+	 * @param sendMessages - Whether to send messages to the attacking player if the PvP attempt is not allowed
+	 * @return Whether the PvP attempt is allowed
+	 */
+	public boolean checkPvPAttempt(OfflinePlayer attacker, Player victim, boolean sendMessages) {
 		if(attacker.equals(victim)) {
 			return true;
 		}
@@ -153,28 +164,33 @@ public final class PvP extends JavaPlugin implements Listener {
 		}
 
 		if(!pvpEnabled.contains(attacker.getUniqueId())) {
-			if(attacker instanceof Player onlinePlayer && checkMessageCooldown(onlinePlayer)) {
-				lastMessage.put(onlinePlayer, Instant.now());
-				onlinePlayer.sendMessage(Messages.getComponent("errors.cannot-damage-pvp-disabled",
-														   Collections.emptyMap(),
-														   Collections.singletonMap("player", victim.displayName())));
+			if(sendMessages && attacker instanceof Player onlinePlayer) {
+				sendDenyMessage("errors.cannot-damage-pvp-disabled", onlinePlayer, victim);
 			}
 
 			return false;
 		}
 
 		if(!pvpEnabled.contains(victim.getUniqueId())) {
-			if(attacker instanceof Player onlinePlayer && checkMessageCooldown(onlinePlayer)) {
-				lastMessage.put(onlinePlayer, Instant.now());
-				onlinePlayer.sendMessage(Messages.getComponent("errors.cannot-damage-target-pvp-disabled",
-														   Collections.emptyMap(),
-														   Collections.singletonMap("player", victim.displayName())));
+			if(sendMessages && attacker instanceof Player onlinePlayer) {
+				sendDenyMessage("errors.cannot-damage-target-pvp-disabled", onlinePlayer, victim);
 			}
 
 			return false;
 		}
 
 		return true;
+	}
+
+	private void sendDenyMessage(String key, Player player, Player target) {
+		if (!player.canSee(target) || !checkMessageCooldown(player)) {
+			return;
+		}
+
+		lastMessage.put(player, Instant.now());
+		player.sendMessage(Messages.getComponent(key,
+												 Collections.emptyMap(),
+												 Collections.singletonMap("player", target.displayName())));
 	}
 
 	private boolean checkMessageCooldown(Player target) {
@@ -218,7 +234,7 @@ public final class PvP extends JavaPlugin implements Listener {
 						return true;
 					}
 
-					return !pvpEnabled.contains(player.getUniqueId()) || !pvpEnabled.contains(otherPlayer.getUniqueId());
+					return !checkPvPAttempt(player, otherPlayer);
 				})
 				.sorted((Player player1, Player player2) -> {
 					double player1Distance = player1.getLocation().distanceSquared(location);

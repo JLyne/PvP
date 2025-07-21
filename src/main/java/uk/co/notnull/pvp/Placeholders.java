@@ -153,7 +153,7 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
 
         if(identifier.equals("can_pvp")) {
             return String.valueOf(!player1.equals(player2)
-                    && plugin.hasPvPEnabled(player1) && plugin.hasPvPEnabled(player2));
+                    && plugin.checkPvPAttempt(player1, player2, false));
         }
 
         if(identifier.equals("status")) {
