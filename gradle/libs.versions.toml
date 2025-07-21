@@ -1,0 +1,17 @@
+[versions]
+pluginYml = "0.7.1"
+paperApi = "1.20.6-R0.1-SNAPSHOT"
+placeholderApi = "2.11.6"
+cloud = "1.8.4"
+shadow = "8.3.8"
+
+[libraries]
+paperApi = { group = "io.papermc.paper", name = "paper-api", version.ref = "paperApi" }
+placeholderApi = { group = "me.clip", name = "placeholderapi", version.ref  = "placeholderApi" }
+cloudPaper = { group = "cloud.commandframework", name = "cloud-paper", version.ref  = "cloud" }
+cloudMinecraftExtras = { group = "cloud.commandframework", name = "cloud-minecraft-extras", version.ref  = "cloud" }
+cloudAnnotations = { group = "cloud.commandframework", name = "cloud-annotations", version.ref  = "cloud" }
+
+[plugins]
+pluginYml = { id = "de.eldoria.plugin-yml.bukkit", version.ref = "pluginYml" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

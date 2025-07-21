@@ -1,0 +1,78 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
+
+plugins {
+    java
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.pluginYml)
+}
+
+group = "uk.co.notnull"
+version = "1.1-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+	maven {
+        url = uri("https://papermc.io/repo/repository/maven-public/")
+    }
+
+    maven {
+        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    }
+    mavenLocal()
+}
+
+dependencies {
+	compileOnly(libs.paperApi)
+	compileOnly(libs.placeholderApi)
+    implementation(libs.cloudPaper)
+    implementation(libs.cloudMinecraftExtras)
+    implementation(libs.cloudAnnotations)
+}
+
+bukkit {
+    main = "uk.co.notnull.pvp.PvP"
+    apiVersion = libs.versions.paperApi.get().replace(Regex("\\-R\\d.\\d-SNAPSHOT"), "")
+    authors = listOf("Jim (AnEnragedPigeon)")
+    description = "Toggleable PvP protections"
+    softDepend = listOf("PlaceholderAPI")
+
+    permissions {
+        register("pvp.toggle") {
+            description = "Allows toggling of your own PvP state"
+            default = BukkitPluginDescription.Permission.Default.TRUE
+        }
+        register("pvp.toggle.other") {
+            description = "Allows toggling of other players PvP states"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("pvp.info") {
+            description = "Allows viewing of other players PvP states"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+        register("pvp.reload") {
+            description = "Allows reloading the plugin"
+            default = BukkitPluginDescription.Permission.Default.OP
+        }
+    }
+}
+
+tasks {
+    compileJava {
+        options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing"))
+        options.encoding = "UTF-8"
+    }
+
+    shadowJar {
+        archiveClassifier.set("")
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+}
