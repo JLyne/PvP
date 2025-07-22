@@ -23,7 +23,7 @@ reloaded: "<green><bold>PvP > <reset><light_purple>Config has been reloaded."
 errors:
   not-a-player: "<red><bold>PvP > <reset><yellow>You must be in-game to use this command."
   cannot-damage-pvp-disabled: "<red><bold>PvP > <reset><yellow>You have PvP disabled and cannot attack <red><player>."
-  cannot-damage-target-pvp-disabled: "<red><bold>PvP > <reset><red><player><yellow> is in a PvP arena and cannot be attacked."
+  cannot-damage-target-pvp-disabled: "<red><bold>PvP > <reset><red><player><yellow> has PvP disabled and cannot be attacked."
   cannot-damage-target-not-in-arena: "<red><bold>PvP > <reset><red><player><yellow> is not in your PvP arena and cannot be attacked."
   cannot-damage-target-in-arena: "<red><bold>PvP > <reset><yellow>You are not in <red><player>'s<yellow> PvP arena and cannot attack them."
   cannot-toggle-command-cooldown: "<red><bold>PvP > <reset><yellow>Cannot toggle PvP.<br>You recently enabled PvP and must wait <red><time><yellow> seconds."
