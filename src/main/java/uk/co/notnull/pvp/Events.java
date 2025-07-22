@@ -1,5 +1,6 @@
 package uk.co.notnull.pvp;
 
+import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
@@ -110,6 +111,23 @@ public class Events implements Listener {
 			}
 		});
 	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onEntityKnockback(EntityPushedByEntityAttackEvent event) {
+		if(event.getEntity() instanceof Player victim) {
+			//Prevent knockback if either player has PvP disabled
+			Optional<OfflinePlayer> attacker = plugin.getResponsiblePlayer(event.getPushedBy());
+
+			if(attacker.isPresent()) {
+				if(!plugin.checkPvPAttempt(attacker.get(), victim)) {
+					event.setCancelled(true);
+				} else if(attacker.get() instanceof Player onlinePlayer) {
+					plugin.recordPvP(onlinePlayer, victim);
+				}
+			}
+		}
+	}
+
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDeath(EntityDeathEvent event) {
