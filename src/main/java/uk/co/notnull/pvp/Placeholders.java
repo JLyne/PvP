@@ -142,6 +142,17 @@ public class Placeholders extends PlaceholderExpansion implements Relational {
 			}
 			case "status" -> {
 				if (plugin.isInPvPArena(player)) {
+					return "arena";
+				}
+
+				if (plugin.hasPvPEnabled(player)) {
+					return "enabled";
+				}
+
+				return "disabled";
+			}
+			case "full_status" -> {
+				if (plugin.isInPvPArena(player)) {
 					return plugin.getRemainingPvPCooldown(player) > 0 ? "arena_unsafe" : "arena_safe";
 				}
 
