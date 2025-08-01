@@ -89,15 +89,6 @@ public class Events implements Listener {
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true)
-	public void onEntityCombust(EntityCombustByEntityEvent event) {
-		if(event.getEntity() instanceof ExplosiveMinecart minecart) {
-			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(
-					attacker -> minecart.setMetadata("responsible",
-													 new FixedMetadataValue(plugin, attacker.getUniqueId())));
-		}
-	}
-
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDamaged(EntityDamageByEntityEvent event) {
 		if(!(event.getEntity() instanceof Player victim)) {
@@ -113,21 +104,41 @@ public class Events implements Listener {
 	}
 
 	@EventHandler(ignoreCancelled = true)
+	public void onEntityCombust(EntityCombustByEntityEvent event) {
+		if(event.getEntity() instanceof ExplosiveMinecart minecart) {
+			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(
+					attacker -> minecart.setMetadata("responsible",
+													 new FixedMetadataValue(plugin, attacker.getUniqueId())));
+		}
+	}
+
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityKnockback(EntityPushedByEntityAttackEvent event) {
 		if(event.getEntity() instanceof Player victim) {
 			//Prevent knockback if either player has PvP disabled
 			Optional<OfflinePlayer> attacker = plugin.getResponsiblePlayer(event.getPushedBy());
 
-			if(attacker.isPresent()) {
-				if(!plugin.checkPvPAttempt(attacker.get(), victim)) {
+			attacker.ifPresent(offlinePlayer -> {
+				if (!plugin.checkPvPAttempt(offlinePlayer, victim)) {
 					event.setCancelled(true);
-				} else if(attacker.get() instanceof Player onlinePlayer) {
-					plugin.recordPvP(onlinePlayer, victim);
 				}
-			}
+			});
 		}
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onEntityKnockedBack(EntityPushedByEntityAttackEvent event) {
+		if(!(event.getEntity() instanceof Player victim)) {
+			return;
+		}
+
+		//Record PvP damage
+		plugin.getResponsiblePlayer(event.getPushedBy()).ifPresent(attacker -> {
+			if(attacker instanceof Player onlinePlayer) {
+				plugin.recordPvP(onlinePlayer, victim);
+			}
+		});
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerDeath(EntityDeathEvent event) {
@@ -151,7 +162,6 @@ public class Events implements Listener {
  		});
 	}
 
-
 	@EventHandler(ignoreCancelled = true)
 	public void onPotionSplash(PotionSplashEvent event) {
 		//Ignore potions with only positive effects
@@ -165,7 +175,24 @@ public class Events implements Listener {
 				if(affectedEntity instanceof Player victim) {
 					if(!plugin.checkPvPAttempt(attacker, victim)) {
 						event.setIntensity(victim, 0.0);
-					} else if (attacker instanceof Player onlinePlayer) {
+					}
+				}
+			}
+		});
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPotionSplashed(PotionSplashEvent event) {
+		//Ignore potions with only positive effects
+		if(event.getPotion().getEffects().stream().allMatch(effect -> PvP.positiveEffects.contains(effect.getType()))) {
+			return;
+		}
+
+		//Record PvP
+		plugin.getResponsiblePlayer(event.getEntity()).ifPresent(attacker -> {
+			for (LivingEntity affectedEntity : event.getAffectedEntities()) {
+				if(affectedEntity instanceof Player victim) {
+					if (event.getIntensity(victim) > 0 && attacker instanceof Player onlinePlayer) {
 						plugin.recordPvP(onlinePlayer, victim);
 					}
 				}
@@ -208,7 +235,41 @@ public class Events implements Listener {
 			if(affectedEntity instanceof Player victim) {
 				if(!plugin.checkPvPAttempt(attacker.get(), victim)) {
 					iterator.remove();
-				} else if (attacker.get() instanceof Player onlinePlayer) {
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPotionLingered(AreaEffectCloudApplyEvent event) {
+		AreaEffectCloud cloud = event.getEntity();
+
+		Optional<OfflinePlayer> attacker = plugin.getResponsiblePlayer(event.getEntity());
+
+		if(attacker.isEmpty()) {
+			return;
+		}
+
+		PotionType basePotionType = cloud.getBasePotionType();
+		List<PotionEffect> effects = new ArrayList<>();
+
+		if(cloud.hasCustomEffects()) {
+			effects.addAll(cloud.getCustomEffects());
+		}
+
+		if(basePotionType != null) {
+			effects.addAll(basePotionType.getPotionEffects());
+		}
+
+		//Ignore clouds with only positive effects
+		if(effects.stream().allMatch(effect -> PvP.positiveEffects.contains(effect.getType()))) {
+			return;
+		}
+
+		//Record PvP
+		for (LivingEntity affectedEntity : event.getAffectedEntities()) {
+			if (affectedEntity instanceof Player victim) {
+				if (attacker.get() instanceof Player onlinePlayer) {
 					plugin.recordPvP(onlinePlayer, victim);
 				}
 			}
