@@ -1,5 +1,5 @@
 [versions]
-pluginYml = "0.7.1"
+pluginYml = "0.8.0"
 paperApi = "1.21.10-R0.1-SNAPSHOT"
 placeholderApi = "2.11.6"
 shadow = "8.3.8"
