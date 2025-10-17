@@ -3,7 +3,6 @@ import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
     java
-    alias(libs.plugins.shadow)
     alias(libs.plugins.pluginYml)
 }
 
@@ -79,13 +78,5 @@ tasks {
     compileJava {
         options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing"))
         options.encoding = "UTF-8"
-    }
-
-    shadowJar {
-        archiveClassifier.set("")
-    }
-
-    build {
-        dependsOn(shadowJar)
     }
 }
