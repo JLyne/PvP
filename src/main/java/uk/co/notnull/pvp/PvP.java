@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -21,7 +22,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.metadata.MetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -38,7 +39,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -74,11 +74,16 @@ public final class PvP extends JavaPlugin implements Listener {
 			PotionEffectType.SATURATION,
 			PotionEffectType.SLOW_FALLING,
 			PotionEffectType.SPEED,
-			PotionEffectType.WATER_BREATHING
+			PotionEffectType.WATER_BREATHING,
+			PotionEffectType.BREATH_OF_THE_NAUTILUS
 	);
+
+	NamespacedKey responsibleKey;
 
 	@Override
 	public void onEnable() {
+		responsibleKey = new NamespacedKey(this, "responsible");
+
 		// Plugin startup logic
 		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(new Events(this), this);
@@ -497,12 +502,16 @@ public final class PvP extends JavaPlugin implements Listener {
 			}
 		}
 
-		Optional<MetadataValue> responsibleMeta = entity.getMetadata("responsible").stream()
-				.filter(v -> Objects.equals(v.getOwningPlugin(), this))
-				.findFirst();
+		try {
+			String responsible = entity.getPersistentDataContainer().get(responsibleKey, PersistentDataType.STRING);
 
-		if(responsibleMeta.isPresent() && responsibleMeta.get().value() instanceof UUID uuid) {
-			return Optional.of(getServer().getOfflinePlayer(uuid));
+			if (responsible != null) {
+				UUID uuid = UUID.fromString(responsible);
+				return Optional.of(getServer().getOfflinePlayer(uuid));
+			}
+
+		} catch (IllegalArgumentException ignored) {
+			return Optional.empty();
 		}
 
 		return Optional.empty();
@@ -524,7 +533,7 @@ public final class PvP extends JavaPlugin implements Listener {
 		}
 	}
 
-	private boolean savePvPStates() {
+	private void savePvPStates() {
 		File dataFile = new File(getDataFolder(), "data.yml");
 		FileConfiguration data = new YamlConfiguration();
 
@@ -532,10 +541,8 @@ public final class PvP extends JavaPlugin implements Listener {
 
 		try {
 			data.save(dataFile);
-			return true;
 		} catch (IOException e) {
 			getLogger().log(Level.SEVERE, "Failed to save player PvP statuses", e);
-			return false;
 		}
 	}
 

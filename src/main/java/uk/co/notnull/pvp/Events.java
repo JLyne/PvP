@@ -25,7 +25,7 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
@@ -84,8 +84,8 @@ public class Events implements Listener {
 
 		if(event.getEntity() instanceof EnderCrystal crystal) {
 			plugin.getResponsiblePlayer(event.getDamager()).ifPresent(
-					attacker -> crystal.setMetadata("responsible",
-													new FixedMetadataValue(plugin, attacker.getUniqueId())));
+					attacker -> crystal.getPersistentDataContainer().set(
+							plugin.responsibleKey, PersistentDataType.STRING, attacker.getUniqueId().toString()));
 		}
 	}
 
@@ -107,8 +107,8 @@ public class Events implements Listener {
 	public void onEntityCombust(EntityCombustByEntityEvent event) {
 		if(event.getEntity() instanceof ExplosiveMinecart minecart) {
 			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(
-					attacker -> minecart.setMetadata("responsible",
-													 new FixedMetadataValue(plugin, attacker.getUniqueId())));
+					attacker -> minecart.getPersistentDataContainer().set(
+							plugin.responsibleKey, PersistentDataType.STRING, attacker.getUniqueId().toString()));
 		}
 	}
 
