@@ -104,7 +104,7 @@ public final class ArenaEvents implements Listener {
 		}
 	}
 
-	private void checkArenaStatus(Player player) {
+	void checkArenaStatus(Player player) {
 		checkArenaStatus(player, player.getLocation());
 	}
 

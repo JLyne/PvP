@@ -202,37 +202,47 @@ public final class PvP extends JavaPlugin implements Listener {
 			return false;
 		}
 
+		// Ensure we have valid attacker instance
+		Player onlineAttacker = getServer().getPlayer(attacker.getUniqueId());
+		if (onlineAttacker == null) {
+			return false;
+		}
+
+		// Check arena status as we can't trust movement events alone
+		arenaEvents.checkArenaStatus((Player) attacker);
+		arenaEvents.checkArenaStatus(victim);
+
 		if (inPvPArena.contains(attacker.getUniqueId()) && inPvPArena.contains(victim.getUniqueId())) {
 			return true;
 		}
 
 		if (inPvPArena.contains(attacker.getUniqueId()) && !inPvPArena.contains(victim.getUniqueId())) {
-			if(sendMessages && attacker instanceof Player onlinePlayer) {
-				sendDenyMessage("errors.cannot-damage-target-not-in-arena", onlinePlayer, victim);
+			if(sendMessages) {
+				sendDenyMessage("errors.cannot-damage-target-not-in-arena", onlineAttacker, victim);
 			}
 
 			return false;
 		}
 
 		if (!inPvPArena.contains(attacker.getUniqueId()) && inPvPArena.contains(victim.getUniqueId())) {
-			if(sendMessages && attacker instanceof Player onlinePlayer ) {
-				sendDenyMessage("errors.cannot-damage-target-in-arena", onlinePlayer, victim);
+			if(sendMessages ) {
+				sendDenyMessage("errors.cannot-damage-target-in-arena", onlineAttacker, victim);
 			}
 
 			return false;
 		}
 
 		if(!pvpEnabled.contains(attacker.getUniqueId())) {
-			if(sendMessages && attacker instanceof Player onlinePlayer) {
-				sendDenyMessage("errors.cannot-damage-pvp-disabled", onlinePlayer, victim);
+			if(sendMessages) {
+				sendDenyMessage("errors.cannot-damage-pvp-disabled", onlineAttacker, victim);
 			}
 
 			return false;
 		}
 
 		if(!pvpEnabled.contains(victim.getUniqueId())) {
-			if(sendMessages && attacker instanceof Player onlinePlayer) {
-				sendDenyMessage("errors.cannot-damage-target-pvp-disabled", onlinePlayer, victim);
+			if(sendMessages) {
+				sendDenyMessage("errors.cannot-damage-target-pvp-disabled", onlineAttacker, victim);
 			}
 
 			return false;
