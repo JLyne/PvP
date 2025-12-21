@@ -11,6 +11,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.damage.DamageSource;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LightningStrike;
@@ -466,6 +467,15 @@ public final class PvP extends JavaPlugin implements Listener {
 		lastDamage.remove(player);
 		lastMessage.remove(player);
 		lastToggle.remove(player.getUniqueId());
+	}
+
+	/**
+	 * Returns the player "responsible" for the given DamageSoruce, if any
+	 * @param DamageSource The damageSource to check
+	 * @return The player
+	 */
+	Optional<OfflinePlayer> getResponsiblePlayer(DamageSource damageSource) {
+		return getResponsiblePlayer(damageSource.getCausingEntity());
 	}
 
 	/**

@@ -5,19 +5,16 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
-import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.LightningStrike;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
-import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
-import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
@@ -25,7 +22,6 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionType;
 
@@ -67,7 +63,7 @@ public class Events implements Listener {
 	public void onPlayerDamage(EntityDamageByEntityEvent event) {
 		if(event.getEntity() instanceof Player victim) {
 			//Prevent damage if either player has PvP disabled
-			Optional<OfflinePlayer> attacker = plugin.getResponsiblePlayer(event.getDamager());
+			Optional<OfflinePlayer> attacker = plugin.getResponsiblePlayer(event.getDamageSource());
 
 			if(attacker.isPresent()) {
 				if(!plugin.checkPvPAttempt(attacker.get(), victim)) {
@@ -81,12 +77,6 @@ public class Events implements Listener {
 				return;
 			}
 		}
-
-		if(event.getEntity() instanceof EnderCrystal crystal) {
-			plugin.getResponsiblePlayer(event.getDamager()).ifPresent(
-					attacker -> crystal.getPersistentDataContainer().set(
-							plugin.responsibleKey, PersistentDataType.STRING, attacker.getUniqueId().toString()));
-		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -96,20 +86,11 @@ public class Events implements Listener {
 		}
 
 		//Record PvP damage
-		plugin.getResponsiblePlayer(event.getDamager()).ifPresent(attacker -> {
+		plugin.getResponsiblePlayer(event.getDamageSource()).ifPresent(attacker -> {
 			if(attacker instanceof Player onlinePlayer) {
 				plugin.recordPvP(onlinePlayer, victim);
 			}
 		});
-	}
-
-	@EventHandler(ignoreCancelled = true)
-	public void onEntityCombust(EntityCombustByEntityEvent event) {
-		if(event.getEntity() instanceof ExplosiveMinecart minecart) {
-			plugin.getResponsiblePlayer(event.getCombuster()).ifPresent(
-					attacker -> minecart.getPersistentDataContainer().set(
-							plugin.responsibleKey, PersistentDataType.STRING, attacker.getUniqueId().toString()));
-		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
