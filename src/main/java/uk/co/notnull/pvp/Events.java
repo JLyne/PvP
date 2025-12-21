@@ -1,8 +1,10 @@
 package uk.co.notnull.pvp;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
+import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.block.Bed;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.LightningStrike;
@@ -15,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.AreaEffectCloudApplyEvent;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
@@ -33,6 +36,7 @@ import java.util.Optional;
 
 public class Events implements Listener {
 	private final PvP plugin;
+	private Player bedExplodePlayer;
 
 	public Events(PvP plugin) {
 		this.plugin = plugin;
@@ -91,6 +95,34 @@ public class Events implements Listener {
 				plugin.recordPvP(onlinePlayer, victim);
 			}
 		});
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPlayerDamageByBlock(EntityDamageByBlockEvent event) {
+		if(event.getEntity() instanceof Player victim) {
+			//Prevent bed bombing damage if either player has PvP disabled
+			if (event.getDamagerBlockState() instanceof Bed && bedExplodePlayer != null) {
+				if(!plugin.checkPvPAttempt(bedExplodePlayer, victim)) {
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerDamagedByBlock(EntityDamageByBlockEvent event) {
+		if(!(event.getEntity() instanceof Player victim)) {
+			return;
+		}
+
+		//Record PvP damage
+		if (event.getDamagerBlockState() instanceof Bed && bedExplodePlayer != null) {
+			if(bedExplodePlayer.isConnected()) {
+				plugin.recordPvP(bedExplodePlayer, victim);
+			}
+		}
+
+		bedExplodePlayer = null;
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -332,5 +364,14 @@ public class Events implements Listener {
 											  Collections.singletonMap("player", nearby.getFirst().displayName())));
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onBedFailEnter(PlayerBedFailEnterEvent event) {
+		if (!event.getWillExplode()) {
+			return;
+		}
+
+		bedExplodePlayer = event.getPlayer();
 	}
 }
