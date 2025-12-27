@@ -5,7 +5,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.MemoryConfiguration;
@@ -23,7 +22,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
@@ -79,12 +77,8 @@ public final class PvP extends JavaPlugin implements Listener {
 			PotionEffectType.BREATH_OF_THE_NAUTILUS
 	);
 
-	NamespacedKey responsibleKey;
-
 	@Override
 	public void onEnable() {
-		responsibleKey = new NamespacedKey(this, "responsible");
-
 		// Plugin startup logic
 		getServer().getPluginManager().registerEvents(this, this);
 		getServer().getPluginManager().registerEvents(new Events(this), this);
@@ -520,18 +514,6 @@ public final class PvP extends JavaPlugin implements Listener {
 			if(lightning.getCausingEntity() instanceof Player player) {
 				return Optional.of(player);
 			}
-		}
-
-		try {
-			String responsible = entity.getPersistentDataContainer().get(responsibleKey, PersistentDataType.STRING);
-
-			if (responsible != null) {
-				UUID uuid = UUID.fromString(responsible);
-				return Optional.of(getServer().getOfflinePlayer(uuid));
-			}
-
-		} catch (IllegalArgumentException ignored) {
-			return Optional.empty();
 		}
 
 		return Optional.empty();
