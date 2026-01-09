@@ -2,6 +2,7 @@ package uk.co.notnull.pvp;
 
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Bed;
@@ -61,6 +62,16 @@ public class Events implements Listener {
 		}
 
 		plugin.clearPlayer(event.getPlayer());
+	}
+
+	@EventHandler(ignoreCancelled = true)
+	public void onPlayerAttack(PrePlayerAttackEntityEvent event) {
+		if(event.getAttacked() instanceof Player victim) {
+			//Prevent attack if either player has PvP disabled
+			if(!plugin.checkPvPAttempt(event.getPlayer(), victim)) {
+				event.setCancelled(true);
+			}
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
