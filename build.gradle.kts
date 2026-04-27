@@ -17,10 +17,12 @@ java {
 
 repositories {
     mavenCentral()
-	maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+    maven {
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
-
+    maven {
+        url = uri("https://maven.enginehub.org/repo/")
+    }
     maven {
         url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     }
@@ -35,7 +37,7 @@ dependencies {
 
 paper {
     main = "uk.co.notnull.pvp.PvP"
-    apiVersion = libs.versions.paperApi.get().replace(Regex("\\-R\\d.\\d-SNAPSHOT"), "")
+    apiVersion = libs.versions.paperApi.get().replace(".build.+", "")
     authors = listOf("Jim (AnEnragedPigeon)")
     description = "Toggleable PvP protections"
 
