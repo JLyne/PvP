@@ -1,11 +1,11 @@
 package uk.co.notnull.pvp;
 
+import com.destroystokyo.paper.MaterialSetTag;
 import io.papermc.paper.event.entity.EntityPushedByEntityAttackEvent;
 import io.papermc.paper.event.player.PlayerBedFailEnterEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.block.Bed;
 import org.bukkit.block.Block;
 import org.bukkit.entity.AreaEffectCloud;
 import org.bukkit.entity.LightningStrike;
@@ -110,9 +110,11 @@ public class Events implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDamageByBlock(EntityDamageByBlockEvent event) {
-		if(event.getEntity() instanceof Player victim) {
+		if(event.getEntity() instanceof Player victim && event.getDamagerBlockState() != null) {
+			Material type = event.getDamagerBlockState().getType();
+			
 			//Prevent bed bombing damage if either player has PvP disabled
-			if (event.getDamagerBlockState() instanceof Bed && bedExplodePlayer != null) {
+			if (MaterialSetTag.BEDS.isTagged(type) && bedExplodePlayer != null) {
 				if(!plugin.checkPvPAttempt(bedExplodePlayer, victim)) {
 					event.setCancelled(true);
 				}
@@ -127,12 +129,16 @@ public class Events implements Listener {
 		}
 
 		//Record PvP damage
-		if (event.getDamagerBlockState() instanceof Bed && bedExplodePlayer != null) {
-			if(bedExplodePlayer.isConnected()) {
-				plugin.recordPvP(bedExplodePlayer, victim);
+		if (event.getDamagerBlockState() != null) {
+			Material type = event.getDamagerBlockState().getType();
+			
+			if (MaterialSetTag.BEDS.isTagged(type) && bedExplodePlayer != null) {
+				if (bedExplodePlayer.isConnected()) {
+					plugin.recordPvP(bedExplodePlayer, victim);
+				}
 			}
 		}
-
+		
 		bedExplodePlayer = null;
 	}
 
