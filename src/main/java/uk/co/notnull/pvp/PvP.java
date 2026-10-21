@@ -465,7 +465,7 @@ public final class PvP extends JavaPlugin implements Listener {
 
 	/**
 	 * Returns the player "responsible" for the given DamageSoruce, if any
-	 * @param DamageSource The damageSource to check
+	 * @param damageSource The damageSource to check
 	 * @return The player
 	 */
 	Optional<OfflinePlayer> getResponsiblePlayer(DamageSource damageSource) {

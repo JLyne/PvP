@@ -88,8 +88,6 @@ public class Events implements Listener {
 						((Tameable) event.getDamager()).setTarget(null);
 					}
 				}
-
-				return;
 			}
 		}
 	}
